@@ -10,36 +10,37 @@ export default function RecipeForm() {
     difficultyLevel: "",
     preparationTime: "",
     instructions: "",
-    ingredients: "", // Notun field
+    ingredients: "", 
   });
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    // Ingredients string-ke array banabo
-    const ingredientsArray = formData.ingredients.split(",").map(i => i.trim());
-    
-    const payload = {
-        ...formData,
-        ingredients: ingredientsArray,
-        authorId: "me",
-        authorName: "Riadul",
-        authorEmail: "me@test.com"
-    };
-
-    const res = await fetch("http://localhost:5000/api/recipes", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
-
-    const result = await res.json();
-    if (res.ok) {
-        alert("Recipe added successfully!");
-    } else {
-        alert("Failed: " + result.message);
-    }
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  
+  const ingredientsArray = formData.ingredients.split(",").map(i => i.trim());
+  
+  const payload = {
+      ...formData,
+      ingredients: ingredientsArray,
+      // authorId, authorName egulo backend-e token theke nibe, 
+      // tai ekhon na pathaleo cholbe
   };
+
+  const res = await fetch("http://localhost:5000/api/recipes", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    
+    credentials: "include", 
+    
+    body: JSON.stringify(payload),
+  });
+
+  const result = await res.json();
+  if (res.ok) {
+      alert("Recipe added successfully!");
+  } else {
+      alert("Failed: " + result.message);
+  }
+};
 
   return (
     <form onSubmit={handleSubmit} className="max-w-lg mx-auto p-6 bg-white shadow-md rounded-lg mt-10">
