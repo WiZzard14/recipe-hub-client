@@ -1,104 +1,76 @@
-"use client";
-import { useEffect, useState } from "react";
-import Link from "next/link";
+'use client';
 
-interface Recipe {
-  _id: string;
-  recipeName: string;
-  recipeImage: string;
-  category: string;
-}
-
-const categories = ["All", "Breakfast", "Lunch", "Dinner", "Snacks"];
+import { useEffect, useState } from 'react';
+import RecipeCard from '@/components/RecipeCard';
+import LoadingSpinner from '@/components/LoadingSpinner';
+import { apiFetch, buildPath } from '@/lib/api';
+import type { PaginatedRecipes, Recipe } from '@/types';
 
 export default function BrowseRecipes() {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [categories, setCategories] = useState<string[]>([]);
+  const [selected, setSelected] = useState<string[]>([]);
+  const [search, setSearch] = useState('');
+  const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [selectedCategory, setSelectedCategory] = useState("All");
-  const [searchQuery, setSearchQuery] = useState("");
-  const limit = 6;
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
-    const categoryQuery = selectedCategory === "All" ? "" : `&category=${selectedCategory}`;
-    const searchParam = searchQuery ? `&search=${searchQuery}` : "";
-    
-    fetch(`http://localhost:5000/api/recipes?page=${currentPage}&limit=${limit}${categoryQuery}${searchParam}`)
-      .then((res) => res.json())
-      .then((data) => {
-        setRecipes(data.recipes || []);
-        setTotalPages(data.totalPages || 1);
-      })
-      .catch((err) => console.error("Error fetching:", err));
-  }, [currentPage, selectedCategory, searchQuery]);
+    const load = async () => {
+      setLoading(true);
+      setError('');
+      try {
+        const path = buildPath('/recipes', { page, limit: 8, search, category: selected.join(',') });
+        const data = await apiFetch<PaginatedRecipes>(path);
+        setRecipes(data.data);
+        setCategories(data.categories);
+        setTotalPages(data.pagination.totalPages);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to load recipes');
+      } finally {
+        setLoading(false);
+      }
+    };
+    const timer = window.setTimeout(() => void load(), 250);
+    return () => window.clearTimeout(timer);
+  }, [page, search, selected]);
+
+  const toggleCategory = (category: string) => {
+    setPage(1);
+    setSelected((prev) => prev.includes(category) ? prev.filter((item) => item !== category) : [...prev, category]);
+  };
 
   return (
-    <div className="max-w-7xl mx-auto p-6">
-      <h1 className="text-4xl font-bold mb-8 text-center text-orange-500">Explore Recipes</h1>
-      
-      {/* Search Bar */}
-      <div className="mb-10 flex justify-center">
-        <input 
-          type="text" 
-          placeholder="Search recipes by name..." 
-          className="w-full max-w-lg p-4 border rounded-full shadow-sm focus:outline-orange-500"
-          onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }} 
-        />
-      </div>
-      
-      <div className="flex flex-wrap justify-center gap-4 mb-10">
-        {categories.map((cat) => (
-          <button
-            key={cat}
-            onClick={() => { setSelectedCategory(cat); setCurrentPage(1); }}
-            className={`px-6 py-2 rounded-full font-medium transition-all ${
-              selectedCategory === cat ? "bg-orange-500 text-white shadow-lg" : "bg-gray-100 hover:bg-gray-200"
-            }`}
-          >
-            {cat}
-          </button>
-        ))}
+    <div className="section-shell">
+      <div className="mb-8 rounded-3xl bg-white p-6 shadow-sm dark:bg-slate-900">
+        <h1 className="text-4xl font-black text-slate-950 dark:text-white">Browse All Recipes</h1>
+        <p className="mt-2 text-slate-600 dark:text-slate-400">Filter recipes by category using server-side MongoDB $in and pagination.</p>
+        <div className="mt-6 grid gap-4 lg:grid-cols-[1fr_auto]">
+          <input value={search} onChange={(e) => { setSearch(e.target.value); setPage(1); }} placeholder="Search by name, category or cuisine..." className="input-field" />
+          <button onClick={() => { setSearch(''); setSelected([]); setPage(1); }} className="rounded-2xl border border-slate-200 px-5 py-3 font-bold hover:border-orange-400 dark:border-slate-700">Reset</button>
+        </div>
+        <div className="mt-4 flex flex-wrap gap-2">
+          {categories.map((category) => (
+            <button key={category} onClick={() => toggleCategory(category)} className={`rounded-full px-4 py-2 text-sm font-bold transition ${selected.includes(category) ? 'bg-orange-500 text-white' : 'bg-orange-50 text-orange-700 hover:bg-orange-100 dark:bg-orange-950 dark:text-orange-200'}`}>
+              {category}
+            </button>
+          ))}
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {recipes.map((recipe: Recipe) => (
-          <Link href={`/recipe/${recipe._id}`} key={recipe._id}>
-            <div className="border rounded-2xl p-4 shadow-sm hover:shadow-xl transition-all bg-white cursor-pointer">
-              <img 
-                src={recipe.recipeImage} 
-                alt={recipe.recipeName} 
-                className="w-full h-52 object-cover rounded-xl mb-4" 
-              />
-              <h2 className="text-xl font-bold text-gray-800 mb-2">{recipe.recipeName}</h2>
-              <span className="bg-orange-100 text-orange-600 px-3 py-1 rounded-full text-sm font-medium">
-                {recipe.category}
-              </span>
-            </div>
-          </Link>
-        ))}
-      </div>
+      {loading ? <LoadingSpinner label="Loading recipes..." /> : error ? <div className="rounded-3xl bg-red-50 p-8 text-center font-bold text-red-600 dark:bg-red-950">{error}</div> : recipes.length === 0 ? (
+        <div className="rounded-3xl bg-white p-10 text-center text-slate-500 dark:bg-slate-900">No recipes found.</div>
+      ) : (
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+          {recipes.map((recipe) => <RecipeCard key={recipe._id} recipe={recipe} />)}
+        </div>
+      )}
 
-      {/* Pagination */}
-      <div className="flex justify-center items-center gap-6 mt-12 mb-8">
-        <button 
-          onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))} 
-          disabled={currentPage === 1} 
-          className="px-5 py-2.5 bg-gray-200 rounded-lg disabled:opacity-50 hover:bg-gray-300 transition-all"
-        >
-          Previous
-        </button>
-        
-        <span className="font-medium text-gray-700 bg-gray-100 px-4 py-2 rounded-lg border">
-          Page {currentPage} of {totalPages}
-        </span>
-        
-        <button 
-          onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))} 
-          disabled={currentPage === totalPages} 
-          className="px-5 py-2.5 bg-orange-500 text-white rounded-lg disabled:opacity-50 hover:bg-orange-600 transition-all"
-        >
-          Next
-        </button>
+      <div className="mt-10 flex items-center justify-center gap-4">
+        <button disabled={page <= 1} onClick={() => setPage((prev) => Math.max(prev - 1, 1))} className="rounded-full border border-slate-200 px-5 py-3 font-bold disabled:opacity-40 dark:border-slate-700">Previous</button>
+        <span className="font-bold text-slate-600 dark:text-slate-300">Page {page} of {totalPages}</span>
+        <button disabled={page >= totalPages} onClick={() => setPage((prev) => Math.min(prev + 1, totalPages))} className="rounded-full border border-slate-200 px-5 py-3 font-bold disabled:opacity-40 dark:border-slate-700">Next</button>
       </div>
     </div>
   );
