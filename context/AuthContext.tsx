@@ -1,56 +1,73 @@
 "use client";
-import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { createContext, useContext, useState, useEffect, ReactNode, useRef } from "react";
 
-interface AuthContextType {
-  isLoggedIn: boolean;
-  userImage: string | null;
-  login: (image: string) => void;
-  logout: () => void;
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  image: string;
+  role: string;
+  isPremium: boolean;
 }
 
-const AuthContext = createContext<AuthContextType>({ 
-  isLoggedIn: false, 
-  userImage: null,
-  login: () => {},
-  logout: () => {}
-});
+interface AuthContextType {
+  user: User | null;
+  setUser: (user: User | null) => void;
+  loading: boolean;
+}
+
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [userImage, setUserImage] = useState<string | null>(null);
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+  
+  const isMounted = useRef(true);
 
   useEffect(() => {
-    const checkLoginStatus = () => {
-      const loggedInStatus = localStorage.getItem("isLoggedIn");
-      const savedImage = localStorage.getItem("userImage");
-      
-      if (loggedInStatus === "true") {
-        setIsLoggedIn(true);
-        if (savedImage) setUserImage(savedImage);
+    isMounted.current = true;
+
+    const checkUserLoggedIn = async () => {
+      try {
+        const res = await fetch("http://localhost:5000/api/auth/me", { 
+          credentials: "include" 
+        });
+        
+        if (isMounted.current) {
+          if (res.ok) {
+            const data = await res.json();
+            setUser(data.user);
+          } else {
+            setUser(null);
+          }
+          setLoading(false);
+        }
+      } catch (error) {
+        if (isMounted.current) {
+          setUser(null);
+          setLoading(false);
+        }
       }
     };
-    checkLoginStatus();
+
+    checkUserLoggedIn();
+
+    return () => {
+      isMounted.current = false;
+    };
   }, []);
 
-  const login = (image: string) => {
-    localStorage.setItem("isLoggedIn", "true");
-    localStorage.setItem("userImage", image);
-    setIsLoggedIn(true);
-    setUserImage(image);
-  };
-
-  const logout = () => {
-    localStorage.removeItem("isLoggedIn");
-    localStorage.removeItem("userImage");
-    setIsLoggedIn(false);
-    setUserImage(null);
-  };
-
   return (
-    <AuthContext.Provider value={{ isLoggedIn, userImage, login, logout }}>
+    <AuthContext.Provider value={{ user, setUser, loading }}>
       {children}
     </AuthContext.Provider>
   );
 }
 
-export const useAuth = () => useContext(AuthContext);
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error("useAuth must be used within an AuthProvider");
+  }
+  return context;
+};
