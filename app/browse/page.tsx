@@ -16,22 +16,35 @@ export default function BrowseRecipes() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [selectedCategory, setSelectedCategory] = useState("All");
+  const [searchQuery, setSearchQuery] = useState("");
   const limit = 6;
 
   useEffect(() => {
     const categoryQuery = selectedCategory === "All" ? "" : `&category=${selectedCategory}`;
-    fetch(`http://localhost:5000/api/recipes?page=${currentPage}&limit=${limit}${categoryQuery}`)
+    const searchParam = searchQuery ? `&search=${searchQuery}` : "";
+    
+    fetch(`http://localhost:5000/api/recipes?page=${currentPage}&limit=${limit}${categoryQuery}${searchParam}`)
       .then((res) => res.json())
       .then((data) => {
         setRecipes(data.recipes || []);
         setTotalPages(data.totalPages || 1);
       })
       .catch((err) => console.error("Error fetching:", err));
-  }, [currentPage, selectedCategory]);
+  }, [currentPage, selectedCategory, searchQuery]);
 
   return (
     <div className="max-w-7xl mx-auto p-6">
       <h1 className="text-4xl font-bold mb-8 text-center text-orange-500">Explore Recipes</h1>
+      
+      {/* Search Bar */}
+      <div className="mb-10 flex justify-center">
+        <input 
+          type="text" 
+          placeholder="Search recipes by name..." 
+          className="w-full max-w-lg p-4 border rounded-full shadow-sm focus:outline-orange-500"
+          onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }} 
+        />
+      </div>
       
       <div className="flex flex-wrap justify-center gap-4 mb-10">
         {categories.map((cat) => (
@@ -65,6 +78,7 @@ export default function BrowseRecipes() {
         ))}
       </div>
 
+      {/* Pagination */}
       <div className="flex justify-center items-center gap-6 mt-12 mb-8">
         <button 
           onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))} 
