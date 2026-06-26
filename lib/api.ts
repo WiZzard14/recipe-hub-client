@@ -34,7 +34,22 @@ export async function apiFetch<T>(path: string, options: RequestInit = {}): Prom
 
 export async function uploadToImgbb(file: File): Promise<string> {
   const key = process.env.NEXT_PUBLIC_IMGBB_API_KEY;
-  if (!key || key.includes('replace')) throw new Error('NEXT_PUBLIC_IMGBB_API_KEY is missing. Use Image URL instead or add the key.');
+
+  // Zero-config mode: if no imgbb key is supplied, keep the assignment working by
+  // converting small uploaded images to a data URL. Add a real imgbb key later for
+  // production-grade permanent image hosting.
+  if (!key || key.includes('replace')) {
+    if (file.size > 950_000) {
+      throw new Error('Image is too large for zero-config upload. Use an Image URL or add NEXT_PUBLIC_IMGBB_API_KEY.');
+    }
+    return await new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(String(reader.result));
+      reader.onerror = () => reject(new Error('Image preview upload failed'));
+      reader.readAsDataURL(file);
+    });
+  }
+
   const formData = new FormData();
   formData.append('image', file);
   const res = await fetch(`https://api.imgbb.com/1/upload?key=${key}`, { method: 'POST', body: formData });
