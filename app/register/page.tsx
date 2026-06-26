@@ -7,7 +7,7 @@ export default function RegisterPage() {
     name: "", 
     email: "", 
     password: "", 
-    image: "" // Notun field
+    image: "" 
   });
   const router = useRouter();
 
@@ -35,39 +35,51 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="max-w-md mx-auto mt-20 p-8 bg-white shadow-lg rounded-2xl">
-      <h2 className="text-2xl font-bold mb-6 text-center">Create Account</h2>
+    <div className="max-w-md mx-auto mt-20 p-8 bg-white shadow-lg rounded-2xl border">
+      <h2 className="text-2xl font-bold mb-6 text-center text-orange-500">Create Account</h2>
+      
       <form onSubmit={handleRegister} className="flex flex-col gap-4">
         <input 
-          placeholder="Name" 
-          className="p-3 border rounded-lg" 
+          placeholder="Full Name" 
+          className="p-3 border rounded-lg focus:outline-orange-500" 
           required
           onChange={(e) => setFormData({...formData, name: e.target.value})} 
         />
         <input 
           type="email" 
-          placeholder="Email" 
-          className="p-3 border rounded-lg" 
+          placeholder="Email Address" 
+          className="p-3 border rounded-lg focus:outline-orange-500" 
           required
           onChange={(e) => setFormData({...formData, email: e.target.value})} 
         />
         <input 
           type="password" 
           placeholder="Password" 
-          className="p-3 border rounded-lg" 
+          className="p-3 border rounded-lg focus:outline-orange-500" 
           required
           onChange={(e) => setFormData({...formData, password: e.target.value})} 
         />
         <input 
           placeholder="Profile Image URL" 
-          className="p-3 border rounded-lg" 
+          className="p-3 border rounded-lg focus:outline-orange-500" 
           required
           onChange={(e) => setFormData({...formData, image: e.target.value})} 
         />
-        <button className="bg-orange-500 text-white p-3 rounded-lg font-bold hover:bg-orange-600 transition">
+        <button type="submit" className="bg-orange-500 text-white p-3 rounded-lg font-bold hover:bg-orange-600 transition-all mt-2">
           Register
         </button>
       </form>
+
+      {/* Divider */}
+      <div className="relative flex items-center justify-center w-full mt-6 border border-t">
+        <div className="absolute px-5 bg-white text-gray-500 text-sm">Or</div>
+      </div>
+
+      {/* Google Sign Up Button */}
+      <button type="button" className="w-full mt-6 flex items-center justify-center gap-3 p-3 border rounded-lg font-medium hover:bg-gray-50 transition-all">
+        <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" className="w-6 h-6" />
+        Sign up with Google
+      </button>
     </div>
   );
 }

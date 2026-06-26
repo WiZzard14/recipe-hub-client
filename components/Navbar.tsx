@@ -4,16 +4,11 @@ import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
 
 export default function NavbarComponent() {
-  const { isLoggedIn, setIsLoggedIn } = useAuth();
+  const { isLoggedIn, userImage, logout } = useAuth();
   const router = useRouter();
 
   const handleLogout = () => {
-    // Local state clear kora
-    localStorage.removeItem("isLoggedIn");
-    setIsLoggedIn(false);
-    
-    // Cookie clear korar jonno asole backend-e ekta /logout route thaka valo
-    // Kintu ekhon UI update hoye jabe ebang user ke home e pathiye dibe
+    logout();
     router.push("/");
   };
 
@@ -32,9 +27,17 @@ export default function NavbarComponent() {
 
         <div className="flex items-center gap-5">
           {isLoggedIn ? (
-            <button onClick={handleLogout} className="text-red-500 font-bold hover:text-red-700">
-              Logout
-            </button>
+            <div className="flex items-center gap-4">
+              {/* Profile Image Dekhanor logic */}
+              <img 
+                src={userImage || "https://avatar.iran.liara.run/public"} 
+                alt="Profile" 
+                className="w-10 h-10 rounded-full border-2 border-orange-500 object-cover"
+              />
+              <button onClick={handleLogout} className="text-red-500 font-bold hover:text-red-700">
+                Logout
+              </button>
+            </div>
           ) : (
             <>
               <Link href="/login" className="hidden lg:block font-medium hover:text-orange-500">Login</Link>

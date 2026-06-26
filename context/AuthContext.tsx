@@ -3,33 +3,51 @@ import { createContext, useContext, useState, useEffect, ReactNode } from "react
 
 interface AuthContextType {
   isLoggedIn: boolean;
-  setIsLoggedIn: (val: boolean) => void;
+  userImage: string | null;
+  login: (image: string) => void;
+  logout: () => void;
 }
 
 const AuthContext = createContext<AuthContextType>({ 
   isLoggedIn: false, 
-  setIsLoggedIn: () => {} 
+  userImage: null,
+  login: () => {},
+  logout: () => {}
 });
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  // Shudhu isLoggedIn state rakhlam, isMounted baad!
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userImage, setUserImage] = useState<string | null>(null);
 
-useEffect(() => {
-    // Ekta choto function toiri kore tar vitore state update korlam
-    // jate linter ar complain na kore
+  useEffect(() => {
     const checkLoginStatus = () => {
       const loggedInStatus = localStorage.getItem("isLoggedIn");
+      const savedImage = localStorage.getItem("userImage");
+      
       if (loggedInStatus === "true") {
         setIsLoggedIn(true);
+        if (savedImage) setUserImage(savedImage);
       }
     };
-
     checkLoginStatus();
   }, []);
 
+  const login = (image: string) => {
+    localStorage.setItem("isLoggedIn", "true");
+    localStorage.setItem("userImage", image);
+    setIsLoggedIn(true);
+    setUserImage(image);
+  };
+
+  const logout = () => {
+    localStorage.removeItem("isLoggedIn");
+    localStorage.removeItem("userImage");
+    setIsLoggedIn(false);
+    setUserImage(null);
+  };
+
   return (
-    <AuthContext.Provider value={{ isLoggedIn, setIsLoggedIn }}>
+    <AuthContext.Provider value={{ isLoggedIn, userImage, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
