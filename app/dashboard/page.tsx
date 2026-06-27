@@ -98,7 +98,8 @@ function AdminOverview({ stats }: { stats: AdminStats }) {
         <StatCard label="Premium Members" value={stats.totalPremiumMembers} />
         <StatCard label="Pending Reports" value={stats.totalReports} />
       </div>
-      <div className="mt-8 grid gap-5 md:grid-cols-4">
+      <div className="mt-8 grid gap-5 md:grid-cols-5">
+        <DashboardLink href="/dashboard/admin-add-featured" title="Add Featured" desc="Add food directly to featured recipes." />
         <DashboardLink href="/dashboard/users" title="Manage Users" desc="Block or unblock users." />
         <DashboardLink href="/dashboard/admin-recipes" title="Manage Recipes" desc="Edit, delete or feature recipes." />
         <DashboardLink href="/dashboard/reports" title="Reports" desc="Dismiss reports or remove recipes." />

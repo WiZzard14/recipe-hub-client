@@ -52,8 +52,13 @@ function ManageRecipes() {
 
   return (
     <div className="section-shell">
-      <h1 className="text-4xl font-black text-slate-950 dark:text-white">Manage Recipes</h1>
-      <p className="mt-2 text-slate-500">Admin can edit, delete and feature recipes. Featured recipes appear on the Home page.</p>
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 className="text-4xl font-black text-slate-950 dark:text-white">Manage Recipes</h1>
+          <p className="mt-2 text-slate-500">Admin can edit, delete and feature recipes. Featured recipes appear on the Home page.</p>
+        </div>
+        <Link href="/dashboard/admin-add-featured" className="rounded-full bg-orange-500 px-6 py-3 text-center font-black text-white hover:bg-orange-600">+ Add Featured Food</Link>
+      </div>
       {message && <p className="mt-6 rounded-2xl bg-orange-50 p-4 font-bold text-orange-700 dark:bg-orange-950">{message}</p>}
       <div className="mt-8 overflow-hidden rounded-3xl bg-white shadow-sm dark:bg-slate-900">
         <table className="w-full min-w-[900px] text-left text-sm">
@@ -66,13 +71,13 @@ function ManageRecipes() {
                 <td className="p-4">{recipe.category}</td>
                 <td className="p-4">{recipe.likesCount}</td>
                 <td className="p-4">{recipe.isFeatured ? 'Yes' : 'No'}</td>
-                <td className="p-4"><div className="flex flex-wrap gap-2"><Link href={`/recipe/${recipe._id}`} className="rounded-full bg-slate-100 px-3 py-2 font-bold dark:bg-slate-800">View</Link><button onClick={() => setEditing(recipe)} className="rounded-full bg-blue-50 px-3 py-2 font-bold text-blue-600 dark:bg-blue-950">Edit</button><button onClick={() => void action(recipe._id, 'feature')} className="rounded-full bg-yellow-100 px-3 py-2 font-bold text-yellow-700">Feature</button><button onClick={() => void action(recipe._id, 'delete')} className="rounded-full bg-red-50 px-3 py-2 font-bold text-red-600 dark:bg-red-950">Delete</button></div></td>
+                <td className="p-4"><div className="flex flex-wrap gap-2"><Link href={`/recipe/${recipe._id}`} className="rounded-full bg-slate-100 px-3 py-2 font-bold dark:bg-slate-800">View</Link><button onClick={() => setEditing(recipe)} className="rounded-full bg-blue-50 px-3 py-2 font-bold text-blue-600 dark:bg-blue-950">Edit</button><button onClick={() => void action(recipe._id, 'feature')} className="rounded-full bg-yellow-100 px-3 py-2 font-bold text-yellow-700">{recipe.isFeatured ? 'Unfeature' : 'Feature'}</button><button onClick={() => void action(recipe._id, 'delete')} className="rounded-full bg-red-50 px-3 py-2 font-bold text-red-600 dark:bg-red-950">Delete</button></div></td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
-      {editing && <div className="fixed inset-0 z-50 overflow-y-auto bg-black/60 p-4"><div className="mx-auto my-8 max-w-4xl"><div className="mb-4 flex justify-end"><button onClick={() => setEditing(null)} className="rounded-full bg-white px-5 py-2 font-bold text-slate-900">Close</button></div><RecipeForm mode="edit" initial={editing} onUpdated={(recipe) => { setRecipes((prev) => prev.map((item) => item._id === recipe._id ? recipe : item)); setEditing(null); }} /></div></div>}
+      {editing && <div className="fixed inset-0 z-50 overflow-y-auto bg-black/60 p-4"><div className="mx-auto my-8 max-w-4xl"><div className="mb-4 flex justify-end"><button onClick={() => setEditing(null)} className="rounded-full bg-white px-5 py-2 font-bold text-slate-900">Close</button></div><RecipeForm mode="edit" initial={editing} allowFeature onUpdated={(recipe) => { setRecipes((prev) => prev.map((item) => item._id === recipe._id ? recipe : item)); setEditing(null); }} /></div></div>}
     </div>
   );
 }
