@@ -107,7 +107,7 @@ export default function RecipeDetails() {
             <div className="flex flex-wrap gap-3">
               <button onClick={likeRecipe} className="rounded-full bg-red-50 px-5 py-3 font-black text-red-600 hover:bg-red-100 dark:bg-red-950">❤️ {recipe.likesCount || 0}</button>
               <button onClick={toggleFavorite} className="rounded-full bg-orange-50 px-5 py-3 font-black text-orange-600 hover:bg-orange-100 dark:bg-orange-950">{data.isFavorite ? '★ Favorited' : '☆ Favorite'}</button>
-              <button onClick={purchaseRecipe} className="rounded-full bg-slate-900 px-5 py-3 font-black text-white hover:bg-slate-700 dark:bg-white dark:text-slate-900">{data.isPurchased ? 'Purchased' : 'Purchase'}</button>
+              <button onClick={purchaseRecipe} disabled={data.isPurchased} className="rounded-full bg-slate-900 px-5 py-3 font-black text-white hover:bg-slate-700 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-white dark:text-slate-900">{data.isPurchased ? 'Purchased' : 'Purchase'}</button>
               <button onClick={() => setShowReport(true)} className="rounded-full border border-slate-200 px-5 py-3 font-black text-slate-600 hover:border-red-400 hover:text-red-500 dark:border-slate-700">Report</button>
             </div>
           </div>

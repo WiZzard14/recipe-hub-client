@@ -39,7 +39,7 @@ function PremiumPayment() {
           <p className="text-sm font-bold text-slate-500">One-time payment</p>
           <p className="mt-2 text-5xl font-black text-orange-500">৳500</p>
         </div>
-        <button onClick={checkout} disabled={loading} className="mt-8 rounded-full bg-orange-500 px-10 py-4 font-black text-white hover:bg-orange-600 disabled:opacity-60">{loading ? 'Redirecting...' : 'Pay with Stripe Checkout'}</button>
+        <button onClick={checkout} disabled={loading} className="mt-8 rounded-full bg-orange-500 px-10 py-4 font-black text-white hover:bg-orange-600 disabled:opacity-60">{loading ? 'Redirecting...' : 'Pay / Demo Checkout'}</button>
       </div>
     </div>
   );
