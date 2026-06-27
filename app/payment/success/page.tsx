@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import Protected from '@/components/Protected';
 import { useAuth } from '@/context/AuthContext';
@@ -19,8 +19,12 @@ function PaymentSuccess() {
   const { refreshUser } = useAuth();
   const [message, setMessage] = useState('Saving payment...');
   const [done, setDone] = useState(false);
+  const hasSavedRef = useRef(false);
 
   useEffect(() => {
+    if (hasSavedRef.current) return;
+    hasSavedRef.current = true;
+
     const save = async () => {
       const params = new URLSearchParams(window.location.search);
       try {
@@ -28,7 +32,10 @@ function PaymentSuccess() {
           method: 'POST',
           body: JSON.stringify({ sessionId: params.get('session_id'), type: params.get('type'), recipeId: params.get('recipeId') }),
         });
-        await refreshUser();
+        // Refresh the premium badge/user data without turning the global auth loader on.
+        // Otherwise <Protected> unmounts this page and creates an endless
+        // "Saving payment..." -> "Checking authentication..." loop.
+        await refreshUser({ silent: true });
         setMessage(data.message);
       } catch (err) {
         setMessage(err instanceof Error ? err.message : 'Payment save failed');
