@@ -1,73 +1,46 @@
-"use client";
-import { createContext, useContext, useState, useEffect, ReactNode, useRef } from "react";
+'use client';
 
-interface User {
-  id: string;
-  name: string;
-  email: string;
-  image: string;
-  role: string;
-  isPremium: boolean;
-}
+import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { apiFetch } from '@/lib/api';
+import type { AuthUser } from '@/types';
 
 interface AuthContextType {
-  user: User | null;
-  setUser: (user: User | null) => void;
+  user: AuthUser | null;
+  setUser: (user: AuthUser | null) => void;
   loading: boolean;
+  refreshUser: (options?: { silent?: boolean }) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
-  
-  const isMounted = useRef(true);
 
-  useEffect(() => {
-    isMounted.current = true;
-
-    const checkUserLoggedIn = async () => {
-      try {
-        const res = await fetch("http://localhost:5000/api/auth/me", { 
-          credentials: "include" 
-        });
-        
-        if (isMounted.current) {
-          if (res.ok) {
-            const data = await res.json();
-            setUser(data.user);
-          } else {
-            setUser(null);
-          }
-          setLoading(false);
-        }
-      } catch (error) {
-        if (isMounted.current) {
-          setUser(null);
-          setLoading(false);
-        }
-      }
-    };
-
-    checkUserLoggedIn();
-
-    return () => {
-      isMounted.current = false;
-    };
+  const refreshUser = useCallback(async (options: { silent?: boolean } = {}) => {
+    const silent = Boolean(options.silent);
+    if (!silent) setLoading(true);
+    try {
+      const data = await apiFetch<{ user: AuthUser }>('/auth/me');
+      setUser(data.user);
+    } catch {
+      setUser(null);
+    } finally {
+      if (!silent) setLoading(false);
+    }
   }, []);
 
-  return (
-    <AuthContext.Provider value={{ user, setUser, loading }}>
-      {children}
-    </AuthContext.Provider>
-  );
+  useEffect(() => {
+    void refreshUser();
+  }, [refreshUser]);
+
+  const value = useMemo(() => ({ user, setUser, loading, refreshUser }), [user, loading, refreshUser]);
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error("useAuth must be used within an AuthProvider");
-  }
+  if (!context) throw new Error('useAuth must be used within an AuthProvider');
   return context;
 };
