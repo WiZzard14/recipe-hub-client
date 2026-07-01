@@ -29,7 +29,7 @@ function Transactions() {
   if (loading) return <LoadingSpinner label="Loading transactions..." />;
 
   return (
-    <div className="section-shell">
+    <div className="dashboard-page">
       <h1 className="text-4xl font-black text-slate-950 dark:text-white">Transactions</h1>
       <p className="mt-2 text-slate-500">Payment status, amount, date and transaction ID.</p>
       <div className="mt-8 overflow-hidden rounded-3xl bg-white shadow-sm dark:bg-slate-900">

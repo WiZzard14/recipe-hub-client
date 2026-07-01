@@ -50,7 +50,7 @@ function MyRecipes() {
   if (loading) return <LoadingSpinner label="Loading your recipes..." />;
 
   return (
-    <div className="section-shell">
+    <div className="dashboard-page">
       <div className="mb-8 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
         <div>
           <h1 className="text-4xl font-black text-slate-950 dark:text-white">My Recipes</h1>

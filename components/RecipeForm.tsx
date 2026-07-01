@@ -98,19 +98,19 @@ export default function RecipeForm({
     <form onSubmit={handleSubmit} className="mx-auto max-w-3xl rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900 sm:p-8">
       {message && <p className="mb-5 rounded-2xl bg-orange-50 p-4 text-sm font-semibold text-orange-700 dark:bg-orange-950 dark:text-orange-200">{message}</p>}
       <div className="grid gap-4 md:grid-cols-2">
-        <input value={formData.recipeName} onChange={(e) => updateField('recipeName', e.target.value)} required placeholder="Recipe Name" className="input-field" />
-        <select value={formData.category} onChange={(e) => updateField('category', e.target.value)} required className="input-field">
+        <label className="grid gap-2 text-sm font-bold text-slate-700 dark:text-slate-200">Recipe Name<input value={formData.recipeName} onChange={(e) => updateField('recipeName', e.target.value)} required placeholder="Recipe Name" className="input-field" /></label>
+        <label className="grid gap-2 text-sm font-bold text-slate-700 dark:text-slate-200">Category<select value={formData.category} onChange={(e) => updateField('category', e.target.value)} required className="input-field">
           {RECIPE_CATEGORIES.map((category) => <option key={category} value={category}>{category}</option>)}
-        </select>
-        <input value={formData.cuisineType} onChange={(e) => updateField('cuisineType', e.target.value)} required placeholder="Cuisine Type" className="input-field" />
-        <select value={formData.difficultyLevel} onChange={(e) => updateField('difficultyLevel', e.target.value)} required className="input-field">
+        </select></label>
+        <label className="grid gap-2 text-sm font-bold text-slate-700 dark:text-slate-200">Cuisine Type<input value={formData.cuisineType} onChange={(e) => updateField('cuisineType', e.target.value)} required placeholder="Cuisine Type" className="input-field" /></label>
+        <label className="grid gap-2 text-sm font-bold text-slate-700 dark:text-slate-200">Difficulty Level<select value={formData.difficultyLevel} onChange={(e) => updateField('difficultyLevel', e.target.value)} required className="input-field">
           <option>Easy</option>
           <option>Medium</option>
           <option>Hard</option>
-        </select>
-        <input value={formData.preparationTime} onChange={(e) => updateField('preparationTime', e.target.value)} required placeholder="Preparation Time" className="input-field" />
-        <input value={formData.recipeImage} onChange={(e) => updateField('recipeImage', e.target.value)} required placeholder="Image URL or upload below" className="input-field" />
-        <input type="file" accept="image/*" onChange={(e) => void handleImage(e.target.files?.[0])} className="input-field md:col-span-2" />
+        </select></label>
+        <label className="grid gap-2 text-sm font-bold text-slate-700 dark:text-slate-200">Preparation Time<input value={formData.preparationTime} onChange={(e) => updateField('preparationTime', e.target.value)} required placeholder="Example: 30 minutes" className="input-field" /></label>
+        <label className="grid gap-2 text-sm font-bold text-slate-700 dark:text-slate-200">Recipe Image URL<input value={formData.recipeImage} onChange={(e) => updateField('recipeImage', e.target.value)} required placeholder="Upload with ImgBB or paste image URL" className="input-field" /></label>
+        <label className="grid gap-2 text-sm font-bold text-slate-700 dark:text-slate-200 md:col-span-2">Recipe Image Upload (ImgBB)<input type="file" accept="image/*" onChange={(e) => void handleImage(e.target.files?.[0])} className="input-field" /><span className="text-xs font-semibold text-slate-500 dark:text-slate-400">The file is uploaded to ImgBB when NEXT_PUBLIC_IMGBB_API_KEY is configured. The uploaded URL is automatically placed in the image URL field.</span></label>
         {allowFeature && (
           <label className="flex items-center gap-3 rounded-2xl border border-yellow-200 bg-yellow-50 p-4 text-sm font-black text-yellow-800 dark:border-yellow-900 dark:bg-yellow-950 dark:text-yellow-200 md:col-span-2">
             <input
@@ -122,8 +122,8 @@ export default function RecipeForm({
             Show this recipe in Featured Recipes on the Home page
           </label>
         )}
-        <textarea value={formData.ingredients} onChange={(e) => updateField('ingredients', e.target.value)} required placeholder="Ingredients, comma separated" rows={3} className="input-field md:col-span-2" />
-        <textarea value={formData.instructions} onChange={(e) => updateField('instructions', e.target.value)} required placeholder="Step by step instructions" rows={6} className="input-field md:col-span-2" />
+        <label className="grid gap-2 text-sm font-bold text-slate-700 dark:text-slate-200 md:col-span-2">Ingredients<textarea value={formData.ingredients} onChange={(e) => updateField('ingredients', e.target.value)} required placeholder="Ingredients, comma separated" rows={3} className="input-field" /></label>
+        <label className="grid gap-2 text-sm font-bold text-slate-700 dark:text-slate-200 md:col-span-2">Instructions<textarea value={formData.instructions} onChange={(e) => updateField('instructions', e.target.value)} required placeholder="Step by step instructions" rows={6} className="input-field" /></label>
       </div>
       <button disabled={saving} className="mt-6 w-full rounded-full bg-orange-500 px-6 py-3 font-black text-white hover:bg-orange-600 disabled:opacity-60">
         {saving ? 'Saving...' : mode === 'edit' ? 'Update Recipe' : forceFeatured ? 'Publish Featured Recipe' : 'Publish Recipe'}

@@ -47,7 +47,7 @@ function Favorites() {
   if (loading) return <LoadingSpinner label="Loading favorites..." />;
 
   return (
-    <div className="section-shell">
+    <div className="dashboard-page">
       <h1 className="text-4xl font-black text-slate-950 dark:text-white">My Favorites</h1>
       <p className="mt-2 text-slate-500">Remove favorites or open details.</p>
       {message && <p className="mt-6 rounded-2xl bg-orange-50 p-4 font-bold text-orange-700 dark:bg-orange-950">{message}</p>}

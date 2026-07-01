@@ -45,7 +45,7 @@ function Reports() {
   if (loading) return <LoadingSpinner label="Loading reports..." />;
 
   return (
-    <div className="section-shell">
+    <div className="dashboard-page">
       <h1 className="text-4xl font-black text-slate-950 dark:text-white">Recipe Reports</h1>
       <p className="mt-2 text-slate-500">Users can report recipes for spam, offensive content, or copyright issues.</p>
       {message && <p className="mt-6 rounded-2xl bg-orange-50 p-4 font-bold text-orange-700 dark:bg-orange-950">{message}</p>}

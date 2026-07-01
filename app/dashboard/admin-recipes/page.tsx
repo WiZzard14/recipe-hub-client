@@ -51,7 +51,7 @@ function ManageRecipes() {
   if (loading) return <LoadingSpinner label="Loading recipes..." />;
 
   return (
-    <div className="section-shell">
+    <div className="dashboard-page">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-4xl font-black text-slate-950 dark:text-white">Manage Recipes</h1>

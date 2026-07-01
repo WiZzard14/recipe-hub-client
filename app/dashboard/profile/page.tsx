@@ -37,7 +37,7 @@ function Profile() {
   };
 
   return (
-    <div className="section-shell">
+    <div className="dashboard-page">
       <div className="mx-auto max-w-3xl rounded-[2rem] bg-white p-8 shadow-sm dark:bg-slate-900">
         <div className="flex flex-col items-center gap-4 text-center">
           <img src={image || 'https://avatar.iran.liara.run/public'} alt={name} className="h-32 w-32 rounded-full border-4 border-orange-100 object-cover" />

@@ -29,7 +29,7 @@ function PremiumPayment() {
   };
 
   return (
-    <div className="section-shell">
+    <div className="dashboard-page">
       <div className="mx-auto max-w-3xl rounded-[2rem] bg-white p-8 text-center shadow-sm dark:bg-slate-900">
         <span className="text-6xl">👑</span>
         <h1 className="mt-4 text-4xl font-black text-slate-950 dark:text-white">Become a Premium Member</h1>
