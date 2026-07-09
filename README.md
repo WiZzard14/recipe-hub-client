@@ -67,5 +67,4 @@ npm run dev
 ```
 
 ## Screenshot
-
-Add a clean screenshot of the homepage here.
+<img width="1914" height="960" alt="image" src="https://github.com/user-attachments/assets/019eecfe-570d-490c-b424-e94b95bd50a7" />
